@@ -1,0 +1,48 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Mobile-first styles */
+html {
+  -webkit-text-size-adjust: 100%;
+  touch-action: manipulation;
+}
+
+body {
+  @apply antialiased;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Prevent horizontal scrolling on mobile */
+#root {
+  overflow-x: hidden;
+  width: 100%;
+}
+
+/* Better touch targets on mobile */
+button, a {
+  @apply cursor-pointer;
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* Improve form elements on mobile */
+input, select, textarea {
+  @apply text-base;
+  font-size: 16px !important; /* Prevent zoom on focus in iOS */
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Safe area insets for modern iOS devices */
+@supports (padding: max(0px)) {
+  body {
+    padding-left: min(0vmin, env(safe-area-inset-left));
+    padding-right: min(0vmin, env(safe-area-inset-right));
+    padding-top: min(0vmin, env(safe-area-inset-top));
+    padding-bottom: min(0vmin, env(safe-area-inset-bottom));
+  }
+}
