@@ -1,131 +1,125 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
+import { Form, Button } from "react-bootstrap";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
-import { WithContext as ReactTags } from "react-tag-input";
-import { Form, Button } from "react-bootstrap";
-
-const mockNames = ["John", "Tom", "Emily"];
-const mockDepartments = ["Accounts", "HR", "IT", "Finance"];
-const mockTags = ["Invoice", "Report", "Presentation"];
-
-const KeyCodes = {
-  comma: 188,
-  enter: 13,
-};
-
-const delimiters = [KeyCodes.comma, KeyCodes.enter];
+import { useAppDispatch } from "../context/AppState.jsx";
 
 const FileUpload = () => {
-  const [selectedDate, setSelectedDate] = useState(new Date());
+  const dispatch = useAppDispatch();
+
+  const [file, setFile] = useState(null);
   const [category, setCategory] = useState("Personal");
-  const [subOptions, setSubOptions] = useState(mockNames);
   const [selectedSub, setSelectedSub] = useState("");
   const [tags, setTags] = useState([]);
   const [remarks, setRemarks] = useState("");
-  const [file, setFile] = useState(null);
+  const [selectedDate, setSelectedDate] = useState(new Date());
 
-  // Update sub-options when category changes
-  useEffect(() => {
-    if (category === "Personal") {
-      setSubOptions(mockNames);
-    } else {
-      setSubOptions(mockDepartments);
-    }
-    setSelectedSub("");
-  }, [category]);
-
-  // Handle tag addition/removal
-  const handleDelete = (i) => setTags(tags.filter((tag, index) => index !== i));
-  const handleAddition = (tag) => setTags([...tags, tag]);
+  const personalNames = ["John", "Tom", "Emily"];
+  const professionalDepts = ["Accounts", "HR", "IT", "Finance"];
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    console.log({
-      selectedDate,
+    if (!file) {
+      alert("Please select a file");
+      return;
+    }
+
+    const newFile = {
+      name: file.name,
       category,
-      selectedSub,
-      tags: tags.map((t) => t.text),
+      subCategory: selectedSub,
+      tags,
       remarks,
-      file,
-    });
-    alert("File upload simulated! Check console for details.");
+      date: selectedDate.toISOString().split("T")[0],
+      type: file.type.includes("image") ? "image" : "pdf",
+    };
+
+    // Save in global state
+    dispatch({ type: "ADD_FILE", payload: newFile });
+
+    alert("File uploaded (mock). You can find it in Search!");
+    setFile(null);
+    setTags([]);
+    setRemarks("");
   };
 
   return (
-    <Form onSubmit={handleSubmit} className="p-3 border rounded">
-      <h3>File Upload</h3>
+    <div className="container mt-4">
+      <h3>Upload Document</h3>
+      <Form onSubmit={handleSubmit}>
+        <Form.Group className="mb-3">
+          <Form.Label>Select Date</Form.Label>
+          <br />
+          <DatePicker
+            selected={selectedDate}
+            onChange={(date) => setSelectedDate(date)}
+            dateFormat="yyyy-MM-dd"
+          />
+        </Form.Group>
 
-      {/* Date Picker */}
-      <Form.Group className="mb-3">
-        <Form.Label>Date</Form.Label>
-        <DatePicker
-          selected={selectedDate}
-          onChange={(date) => setSelectedDate(date)}
-          className="form-control"
-        />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Category</Form.Label>
+          <Form.Select
+            value={category}
+            onChange={(e) => {
+              setCategory(e.target.value);
+              setSelectedSub("");
+            }}
+          >
+            <option>Personal</option>
+            <option>Professional</option>
+          </Form.Select>
+        </Form.Group>
 
-      {/* Category Dropdown */}
-      <Form.Group className="mb-3">
-        <Form.Label>Category</Form.Label>
-        <Form.Select value={category} onChange={(e) => setCategory(e.target.value)}>
-          <option value="Personal">Personal</option>
-          <option value="Professional">Professional</option>
-        </Form.Select>
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>
+            {category === "Personal" ? "Name" : "Department"}
+          </Form.Label>
+          <Form.Select
+            value={selectedSub}
+            onChange={(e) => setSelectedSub(e.target.value)}
+          >
+            <option value="">-- Select --</option>
+            {category === "Personal"
+              ? personalNames.map((n) => <option key={n}>{n}</option>)
+              : professionalDepts.map((d) => <option key={d}>{d}</option>)}
+          </Form.Select>
+        </Form.Group>
 
-      {/* Sub Dropdown */}
-      <Form.Group className="mb-3">
-        <Form.Label>{category === "Personal" ? "Name" : "Department"}</Form.Label>
-        <Form.Select value={selectedSub} onChange={(e) => setSelectedSub(e.target.value)}>
-          <option value="">Select</option>
-          {subOptions.map((item, index) => (
-            <option key={index} value={item}>
-              {item}
-            </option>
-          ))}
-        </Form.Select>
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Tags (comma separated)</Form.Label>
+          <Form.Control
+            type="text"
+            value={tags.join(", ")}
+            onChange={(e) =>
+              setTags(e.target.value.split(",").map((t) => t.trim()))
+            }
+          />
+        </Form.Group>
 
-      {/* Tags Input */}
-      <Form.Group className="mb-3">
-        <Form.Label>Tags</Form.Label>
-        <ReactTags
-          tags={tags}
-          suggestions={mockTags.map((t) => ({ id: t, text: t }))}
-          handleDelete={handleDelete}
-          handleAddition={handleAddition}
-          separators={delimiters}
-          inputFieldPosition="bottom"
-          autocomplete
-        />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Remarks</Form.Label>
+          <Form.Control
+            type="text"
+            value={remarks}
+            onChange={(e) => setRemarks(e.target.value)}
+          />
+        </Form.Group>
 
-      {/* Remarks */}
-      <Form.Group className="mb-3">
-        <Form.Label>Remarks</Form.Label>
-        <Form.Control
-          type="text"
-          value={remarks}
-          onChange={(e) => setRemarks(e.target.value)}
-          placeholder="Enter remarks"
-        />
-      </Form.Group>
+        <Form.Group className="mb-3">
+          <Form.Label>Upload File</Form.Label>
+          <Form.Control
+            type="file"
+            accept=".pdf, image/*"
+            onChange={(e) => setFile(e.target.files[0])}
+          />
+        </Form.Group>
 
-      {/* File Input */}
-      <Form.Group className="mb-3">
-        <Form.Label>File</Form.Label>
-        <Form.Control
-          type="file"
-          accept=".pdf,image/*"
-          onChange={(e) => setFile(e.target.files[0])}
-        />
-      </Form.Group>
-
-      <Button type="submit" variant="primary">
-        Upload
-      </Button>
-    </Form>
+        <Button type="submit" variant="primary">
+          Upload
+        </Button>
+      </Form>
+    </div>
   );
 };
 

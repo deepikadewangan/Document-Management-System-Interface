@@ -1,181 +1,104 @@
 import React, { useState } from "react";
-import { Form, Button, Table, Badge } from "react-bootstrap";
-
-// Mock file data
-const mockFiles = [
-  {
-    id: 1,
-    name: "Invoice_July.pdf",
-    category: "Professional",
-    subCategory: "Accounts",
-    tags: ["Invoice"],
-    date: "2025-09-15",
-    type: "pdf",
-  },
-  {
-    id: 2,
-    name: "Personal_Photo.png",
-    category: "Personal",
-    subCategory: "John",
-    tags: ["Photo"],
-    date: "2025-09-20",
-    type: "image",
-  },
-  {
-    id: 3,
-    name: "Report_Q2.docx",
-    category: "Professional",
-    subCategory: "HR",
-    tags: ["Report"],
-    date: "2025-08-30",
-    type: "doc",
-  },
-];
+import { Form, Button, Card, Modal } from "react-bootstrap";
+import { useAppState } from "../context/AppState.jsx";
 
 const FileSearch = () => {
-  const [category, setCategory] = useState("");
-  const [subCategory, setSubCategory] = useState("");
-  const [tags, setTags] = useState("");
-  const [fromDate, setFromDate] = useState("");
-  const [toDate, setToDate] = useState("");
+  const { uploadedFiles } = useAppState();
+
   const [results, setResults] = useState([]);
+  const [previewFile, setPreviewFile] = useState(null);
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleSearch = (e) => {
     e.preventDefault();
-
-    const filtered = mockFiles.filter((file) => {
-      const matchCategory = category ? file.category === category : true;
-      const matchSub = subCategory ? file.subCategory === subCategory : true;
-      const matchTags = tags
-        ? file.tags.some((t) =>
-            t.toLowerCase().includes(tags.toLowerCase())
-          )
-        : true;
-      const matchFrom = fromDate ? new Date(file.date) >= new Date(fromDate) : true;
-      const matchTo = toDate ? new Date(file.date) <= new Date(toDate) : true;
-
-      return matchCategory && matchSub && matchTags && matchFrom && matchTo;
-    });
-
-    setResults(filtered);
+    setResults(uploadedFiles); // simple mock search
   };
 
   const handlePreview = (file) => {
-    if (file.type === "pdf" || file.type === "image") {
-      alert(`Previewing ${file.name}`);
-    } else {
-      alert(`Cannot preview ${file.name}. Unsupported type.`);
-    }
+    setPreviewFile(file);
+    setShowPreview(true);
   };
 
   const handleDownload = (file) => {
-    alert(`Downloading ${file.name}...`);
+    alert(`Downloading: ${file.name} (mock)`);
+  };
+
+  const handleDownloadAll = () => {
+    if (results.length === 0) {
+      alert("No files to download");
+      return;
+    }
+    alert("Downloading all files as ZIP (mock)");
   };
 
   return (
-    <div className="mt-4 p-3 border rounded">
-      <h3>File Search</h3>
-      <Form onSubmit={handleSearch}>
-        <Form.Group className="mb-2">
-          <Form.Label>Category</Form.Label>
-          <Form.Select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">All</option>
-            <option value="Personal">Personal</option>
-            <option value="Professional">Professional</option>
-          </Form.Select>
-        </Form.Group>
-
-        <Form.Group className="mb-2">
-          <Form.Label>Name / Department</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter Name or Department"
-            value={subCategory}
-            onChange={(e) => setSubCategory(e.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-2">
-          <Form.Label>Tags</Form.Label>
-          <Form.Control
-            type="text"
-            placeholder="Enter tags"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-2">
-          <Form.Label>From Date</Form.Label>
-          <Form.Control
-            type="date"
-            value={fromDate}
-            onChange={(e) => setFromDate(e.target.value)}
-          />
-        </Form.Group>
-
-        <Form.Group className="mb-2">
-          <Form.Label>To Date</Form.Label>
-          <Form.Control
-            type="date"
-            value={toDate}
-            onChange={(e) => setToDate(e.target.value)}
-          />
-        </Form.Group>
-
-        <Button type="submit" variant="primary" className="mt-2">
+    <div className="container mt-4">
+      <h3>Search Documents</h3>
+      <Form onSubmit={handleSearch} className="mb-3">
+        <Button type="submit" variant="success">
           Search
         </Button>
       </Form>
 
-      {results.length > 0 && (
-        <Table striped bordered hover size="sm" className="mt-3">
-          <thead>
-            <tr>
-              <th>Name</th>
-              <th>Category</th>
-              <th>Subcategory</th>
-              <th>Tags</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {results.map((file) => (
-              <tr key={file.id}>
-                <td>{file.name}</td>
-                <td>{file.category}</td>
-                <td>{file.subCategory}</td>
-                <td>
-                  {file.tags.map((tag, idx) => (
-                    <Badge key={idx} bg="secondary" className="me-1">
-                      {tag}
-                    </Badge>
-                  ))}
-                </td>
-                <td>{file.date}</td>
-                <td>
-                  <Button
-                    size="sm"
-                    variant="info"
-                    className="me-1"
-                    onClick={() => handlePreview(file)}
-                  >
-                    Preview
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="success"
-                    onClick={() => handleDownload(file)}
-                  >
-                    Download
-                  </Button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      )}
+      <div className="mb-3">
+        {results.length > 0 && (
+          <Button variant="secondary" onClick={handleDownloadAll}>
+            Download All as ZIP
+          </Button>
+        )}
+      </div>
+
+      <div>
+        {results.length === 0 ? (
+          <p>No results yet. Try uploading a file first.</p>
+        ) : (
+          results.map((file, idx) => (
+            <Card key={idx} className="mb-3">
+              <Card.Body>
+                <Card.Title>{file.name}</Card.Title>
+                <Card.Text>
+                  <b>Category:</b> {file.category} <br />
+                  <b>{file.category === "Personal" ? "Name" : "Department"}:</b>{" "}
+                  {file.subCategory} <br />
+                  <b>Tags:</b> {file.tags.join(", ")} <br />
+                  <b>Date:</b> {file.date} <br />
+                  <b>Remarks:</b> {file.remarks}
+                </Card.Text>
+                <Button
+                  variant="primary"
+                  className="me-2"
+                  onClick={() => handlePreview(file)}
+                >
+                  Preview
+                </Button>
+                <Button variant="secondary" onClick={() => handleDownload(file)}>
+                  Download
+                </Button>
+              </Card.Body>
+            </Card>
+          ))
+        )}
+      </div>
+
+      {/* Preview Modal */}
+      <Modal show={showPreview} onHide={() => setShowPreview(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>Preview: {previewFile?.name}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {previewFile ? (
+            previewFile.type === "pdf" ? (
+              <p>[PDF Preview Placeholder] — In real app you’d render PDF here.</p>
+            ) : previewFile.type === "image" ? (
+              <p>[Image Preview Placeholder] — In real app you’d render image here.</p>
+            ) : (
+              <p>Preview not supported for this file type.</p>
+            )
+          ) : (
+            <p>No file selected</p>
+          )}
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };

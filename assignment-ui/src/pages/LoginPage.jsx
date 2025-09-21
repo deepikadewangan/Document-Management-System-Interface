@@ -1,6 +1,7 @@
 import React from "react";
 import { Form, Button, Alert } from "react-bootstrap";
 import { useState } from 'react';
+import { useAppDispatch } from "../context/AppState.jsx";
 
 const LoginPage = () => {
 
@@ -27,6 +28,7 @@ const LoginPage = () => {
       const mockToken = "abcd1234token";
       setToken(mockToken);
       localStorage.setItem("authToken", mockToken);
+      dispatch({ type: "SET_TOKEN", payload: mockToken });
       alert("OTP validated! Token saved.");
     } else {
       alert("Invalid OTP. Try 1234.");
