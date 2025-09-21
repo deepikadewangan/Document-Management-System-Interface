@@ -1,12 +1,16 @@
 import React from "react";
+import FileUpload from "../components/FileUpload";
+import FileSearch from "../components/FileSearch";
 
 const DashboardPage = () => {
   return (
-    <div>
+    <div className="container mt-3">
       <h2>Dashboard</h2>
-      {/* File Upload + Search + Preview components will go here */}
+      <FileUpload />
+      <FileSearch />
     </div>
   );
 };
 
 export default DashboardPage;
+
