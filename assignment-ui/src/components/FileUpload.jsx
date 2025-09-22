@@ -46,14 +46,13 @@ const FileUpload = () => {
   };
 
   return (
-    <Container className="mt-4">
-      <Card className="shadow p-4">
-        <h3 className="mb-4">📂 Upload Document</h3>
+    <Container className="mt-5" style={{ maxWidth: "600px" }}>
+      <Card className="shadow-lg p-4 rounded-4">
+        <h3 className="mb-4 text-center">📂 Upload Document</h3>
         <Form onSubmit={handleSubmit}>
           {/* Date Picker */}
           <Form.Group className="mb-3">
             <Form.Label>Select Date</Form.Label>
-            <br />
             <DatePicker
               selected={selectedDate}
               onChange={(date) => setSelectedDate(date)}
@@ -118,7 +117,7 @@ const FileUpload = () => {
           </Form.Group>
 
           {/* File Upload */}
-          <Form.Group className="mb-3">
+          <Form.Group className="mb-4">
             <Form.Label>Upload File</Form.Label>
             <Form.Control
               type="file"
@@ -127,7 +126,7 @@ const FileUpload = () => {
             />
           </Form.Group>
 
-          <Button type="submit" variant="primary" className="w-100">
+          <Button type="submit" variant="primary" className="w-100 fw-bold">
             Upload
           </Button>
         </Form>
