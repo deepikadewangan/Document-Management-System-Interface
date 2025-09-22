@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button, Alert, Spinner } from "react-bootstrap";
+import { Form, Button, Alert, Container, Card } from "react-bootstrap";
 import { useAppDispatch } from "../context/AppState.jsx";
 
 const LoginPage = () => {
@@ -9,83 +9,40 @@ const LoginPage = () => {
   const [otpSent, setOtpSent] = useState(false);
   const [otp, setOtp] = useState("");
   const [token, setToken] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  // Generate OTP (API call)
-  const sendOtp = async (e) => {
+  // Mock send OTP
+  const sendOtp = (e) => {
     e.preventDefault();
-    if (mobile.length !== 10) {
-      alert("Enter a valid 10-digit mobile number");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const response = await fetch(
-        "https://apis.allsoft.co/api/documentManagement/generateOTP",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile_number: mobile }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Failed to send OTP");
-
+    if (mobile.length === 10) {
       setOtpSent(true);
-      alert("OTP sent successfully to " + mobile);
-    } catch (err) {
-      console.error(err);
-      alert("Error sending OTP");
-    } finally {
-      setLoading(false);
+      alert("OTP sent to " + mobile);
+    } else {
+      alert("Enter a valid 10-digit mobile number");
     }
-    
-
   };
 
-  // Validate OTP (API call)
-  const validateOtp = async (e) => {
+  // Mock validate OTP
+  const validateOtp = (e) => {
     e.preventDefault();
-    try {
-      setLoading(true);
-      const response = await fetch(
-        "https://apis.allsoft.co/api/documentManagement/validateOTP",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ mobile_number: mobile, otp }),
-        }
-      );
-
-      if (!response.ok) throw new Error("Invalid OTP");
-
-      const data = await response.json();
-      const userToken = data?.token || "dummyToken"; // fallback in case API doesn’t send token
-
-      setToken(userToken);
-      localStorage.setItem("authToken", userToken);
-      dispatch({ type: "SET_TOKEN", payload: userToken });
-
+    if (otp === "1234") {
+      const mockToken = "abcd1234token";
+      setToken(mockToken);
+      localStorage.setItem("authToken", mockToken);
+      dispatch({ type: "SET_TOKEN", payload: mockToken });
       alert("OTP validated! Token saved.");
-    } catch (err) {
-      console.error(err);
-      alert("Invalid OTP or server error");
-    } finally {
-      setLoading(false);
+    } else {
+      alert("Invalid OTP. Try 1234.");
     }
   };
 
   return (
-    <div
+    <Container
+      fluid
       className="d-flex justify-content-center align-items-center"
-      style={{ minHeight: "100vh", background: "#f8f9fa" }}
+      style={{ minHeight: "100%", backgroundColor: "#f8f9fa"}}
     >
-      <div
-        className="p-4 shadow rounded bg-white"
-        style={{ width: "100%", maxWidth: "400px" }}
-      >
-        <h2 className="text-center mb-4">Login</h2>
+      <Card className="shadow p-4" style={{ maxWidth: "400px", width: "100%", maxHeight:"90%" }}>
+        <h2 className="mb-4 text-center">📱 Login</h2>
 
         {!otpSent ? (
           <Form onSubmit={sendOtp}>
@@ -99,8 +56,8 @@ const LoginPage = () => {
                 required
               />
             </Form.Group>
-            <Button type="submit" variant="primary" disabled={loading} className="w-100">
-              {loading ? <Spinner animation="border" size="sm" /> : "Send OTP"}
+            <Button type="submit" variant="primary" className="w-100">
+              Send OTP
             </Button>
           </Form>
         ) : (
@@ -116,19 +73,19 @@ const LoginPage = () => {
                 required
               />
             </Form.Group>
-            <Button type="submit" variant="success" disabled={loading} className="w-100">
-              {loading ? <Spinner animation="border" size="sm" /> : "Validate OTP"}
+            <Button type="submit" variant="success" className="w-100">
+              Validate OTP
             </Button>
           </Form>
         )}
 
         {token && (
-          <Alert variant="info" className="mt-3">
+          <Alert variant="info" className="mt-3 text-center">
             ✅ Logged in! Token: {token}
           </Alert>
         )}
-      </div>
-    </div>
+      </Card>
+    </Container>
   );
 };
 

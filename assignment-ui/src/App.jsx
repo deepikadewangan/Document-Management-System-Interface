@@ -8,6 +8,8 @@ import DashboardPage from "./pages/DashboardPage";
 import NavigationBar from "./components/Navbar";
 import { Container } from 'react-bootstrap';
 import { Navigate } from 'react-router-dom';
+import FileUpload from "./components/FileUpload";
+import FileSearch from "./components/FileSearch";
 
 
 function App() {
@@ -16,10 +18,11 @@ function App() {
       <NavigationBar />
       <Container className="mt-4">   {/* ✅ Wrap your Routes inside Container */}
         <Routes>
-          <Route path="/" element={<Navigate to="/login" />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/" element={<DashboardPage />} /> {/* Dashboard as default */}
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/admin" element={<AdminPage />} />
+        <Route path="/upload" element={<FileUpload />} />
+        <Route path="/search" element={<FileSearch />} />
         </Routes>
       </Container>
     </Router> 
