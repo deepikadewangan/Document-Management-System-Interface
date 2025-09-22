@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { Form, Button, Alert, Container, Card } from "react-bootstrap";
 
 const AdminPage = () => {
   const [username, setUsername] = useState("");
@@ -14,10 +14,15 @@ const AdminPage = () => {
   };
 
   return (
-    <div className="admin-container">
-      <div className="admin-card">
-        <h2>Admin - Create User</h2>
-        {message && <Alert variant="success">{message}</Alert>}
+    <Container
+      fluid
+      className="d-flex justify-content-center align-items-center"
+      style={{ minHeight: "100vh", backgroundColor: "#f0f2f5" }}
+    >
+      <Card className="shadow-lg p-4 rounded-4" style={{ maxWidth: "400px", width: "100%" }}>
+        <h2 className="mb-4 text-center">🛠 Admin - Create User</h2>
+
+        {message && <Alert variant="success" className="text-center">{message}</Alert>}
 
         <Form onSubmit={handleSubmit}>
           <Form.Group className="mb-3">
@@ -42,12 +47,12 @@ const AdminPage = () => {
             />
           </Form.Group>
 
-          <Button type="submit" variant="primary">
+          <Button type="submit" variant="primary" className="w-100 fw-bold">
             Create User
           </Button>
         </Form>
-      </div>
-    </div>
+      </Card>
+    </Container>
   );
 };
 

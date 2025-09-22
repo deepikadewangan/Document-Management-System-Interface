@@ -14,9 +14,9 @@ const NavigationBar = () => {
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="me-auto">
+            <Nav.Link onClick={() => navigate("/")}>Dashboard</Nav.Link>
             <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
             <Nav.Link onClick={() => navigate("/admin")}>Admin</Nav.Link>
-            <Nav.Link onClick={() => navigate("/")}>Dashboard</Nav.Link>
           </Nav>
         </Navbar.Collapse>
       </Container>

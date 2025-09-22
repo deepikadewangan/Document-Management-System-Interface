@@ -1,12 +1,51 @@
-# React + Vite
+#Document Management System (DMS)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A simple Document Management System built with React.js and React Bootstrap, allowing users to login, upload, and search documents. Admin can create new users. The project uses mock data but is designed to integrate with real APIs (Postman collection provided).
 
-Currently, two official plugins are available:
+#Features
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+->Login Page
 
-## Expanding the ESLint configuration
+Users can enter mobile number and OTP (mocked for demo).
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Token is stored in localStorage after successful login.
+
+->Dashboard
+
+Navigate to Upload File or Search File page.
+
+*File Upload Page
+
+Upload files (PDF or images).
+
+Select Category (Personal/Professional) and Subcategory (Name/Department).
+
+Add tags, remarks, and select document date.
+
+File metadata saved in global state (mock).
+
+*File Search Page
+
+Filter documents by category, subcategory, tags, and date range.
+
+Displays results in cards with Preview and Download buttons (mock functionality).
+
+->Admin Page
+
+Create new users by entering username and password (mock).
+
+Responsive UI
+
+Uses React Bootstrap for styling.
+
+Modern card designs with shadows and rounded corners.
+
+Tech Stack
+
+Frontend: React.js, React Bootstrap, React Router DOM
+
+State Management: Context API
+
+Date Picker: react-datepicker
+
+Mock APIs: Postman collection provided
