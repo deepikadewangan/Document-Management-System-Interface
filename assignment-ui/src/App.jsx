@@ -6,16 +6,22 @@ import LoginPage from "./pages/LoginPage";
 import AdminPage from "./pages/AdminPage";
 import DashboardPage from "./pages/DashboardPage";
 import NavigationBar from "./components/Navbar";
+import { Container } from 'react-bootstrap';
+import { Navigate } from 'react-router-dom';
+
 
 function App() {
   return (
     <Router>
       <NavigationBar />
-      <Routes>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/admin" element={<AdminPage />} />
-        <Route path="/dashboard" element={<DashboardPage />} />
-      </Routes>
+      <Container className="mt-4">   {/* ✅ Wrap your Routes inside Container */}
+        <Routes>
+          <Route path="/" element={<Navigate to="/login" />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/dashboard" element={<DashboardPage />} />
+        </Routes>
+      </Container>
     </Router> 
   );
 }

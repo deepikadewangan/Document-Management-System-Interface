@@ -1,0 +1,100 @@
+body {
+  background-color: #f8f9fa;
+}
+
+h2 {
+  font-weight: 600;
+  color: #333;
+}
+
+form {
+  background: #fff;
+}
+
+html, body, #root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  /* overflow: hidden; */
+}
+
+
+/* Navbar background and shadow */
+.navbar {
+  background-color: #343a40 !important; /* Dark Bootstrap color */
+  box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+}
+
+/* Brand styling */
+.navbar-brand {
+  font-weight: bold;
+  font-size: 1.5rem;
+  color: #ffffff !important;
+  margin-right: 50px; /* Adds spacing between brand and links */
+}
+
+/* Links styling */
+.navbar-nav .nav-link {
+  color: #ffffff !important;
+  margin-right: 15px;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #0d6efd !important; /* Blue highlight on hover */
+}
+
+/* Login/Logout button styling */
+.navbar-nav .btn {
+  margin-left: 10px;
+  border-radius: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar-nav .btn:hover {
+  background-color: #0d6efd; /* Blue hover */
+  color: #ffffff !important;
+}
+
+/* AdminPage container */
+.admin-container {
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f8f9fa; /* Light background for contrast */
+  overflow: hidden;
+}
+
+/* Admin card */
+.admin-card {
+  max-width: 500px;
+  width: 100%;
+  padding: 30px;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+  border-radius: 10px;
+  background-color: #ffffff;
+  overflow: auto;
+}
+
+/* Card heading */
+.admin-card h2 {
+  width: 100%;
+  text-align: center;
+  margin-bottom: 25px;
+  color: #343a40; /* Dark heading */
+
+}
+
+/* Form button styling */
+.admin-card .btn {
+  width: 100%;
+  border-radius: 20px;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.admin-card .btn:hover {
+  background-color: #343a40;
+  color: #ffffff;
+
+}

@@ -1,105 +1,170 @@
 import React, { useState } from "react";
-import { Form, Button, Card, Modal } from "react-bootstrap";
+import { Form, Button, Container, Card, Row, Col } from "react-bootstrap";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { useAppState } from "../context/AppState.jsx";
 
 const FileSearch = () => {
-  const { uploadedFiles } = useAppState();
+  const { files } = useAppState();
 
-  const [results, setResults] = useState([]);
-  const [previewFile, setPreviewFile] = useState(null);
-  const [showPreview, setShowPreview] = useState(false);
+  const [category, setCategory] = useState("");
+  const [subCategory, setSubCategory] = useState("");
+  const [tags, setTags] = useState("");
+  const [fromDate, setFromDate] = useState(null);
+  const [toDate, setToDate] = useState(null);
 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    setResults(uploadedFiles); // simple mock search
-  };
+  const personalNames = ["John", "Tom", "Emily"];
+  const professionalDepts = ["Accounts", "HR", "IT", "Finance"];
 
-  const handlePreview = (file) => {
-    setPreviewFile(file);
-    setShowPreview(true);
-  };
+  const handleSearch = () => {
+    let results = Array.isArray(files) ? files : [];
 
-  const handleDownload = (file) => {
-    alert(`Downloading: ${file.name} (mock)`);
-  };
-
-  const handleDownloadAll = () => {
-    if (results.length === 0) {
-      alert("No files to download");
-      return;
+    if (category) results = results.filter((f) => f.category === category);
+    if (subCategory)
+      results = results.filter((f) => f.subCategory === subCategory);
+    if (tags) {
+      const tagList = tags.split(",").map((t) => t.trim().toLowerCase());
+      results = results.filter((f) =>
+        f.tags.some((t) => tagList.includes(t.toLowerCase()))
+      );
     }
-    alert("Downloading all files as ZIP (mock)");
+    if (fromDate)
+      results = results.filter(
+        (f) => new Date(f.date) >= new Date(fromDate)
+      );
+    if (toDate)
+      results = results.filter((f) => new Date(f.date) <= new Date(toDate));
+
+    return results;
   };
+
+  const results = handleSearch();
 
   return (
-    <div className="container mt-4">
-      <h3>Search Documents</h3>
-      <Form onSubmit={handleSearch} className="mb-3">
-        <Button type="submit" variant="success">
-          Search
-        </Button>
-      </Form>
+    <Container className="mt-4">
+      <Card className="shadow p-4 mb-4">
+        <h3 className="mb-4">🔍 Search Documents</h3>
+        <Form>
+          {/* Category */}
+          <Form.Group className="mb-3">
+            <Form.Label>Category</Form.Label>
+            <Form.Select
+              value={category}
+              onChange={(e) => {
+                setCategory(e.target.value);
+                setSubCategory("");
+              }}
+            >
+              <option value="">-- Select Category --</option>
+              <option>Personal</option>
+              <option>Professional</option>
+            </Form.Select>
+          </Form.Group>
 
-      <div className="mb-3">
-        {results.length > 0 && (
-          <Button variant="secondary" onClick={handleDownloadAll}>
-            Download All as ZIP
+          {/* Subcategory */}
+          {category && (
+            <Form.Group className="mb-3">
+              <Form.Label>
+                {category === "Personal" ? "Name" : "Department"}
+              </Form.Label>
+              <Form.Select
+                value={subCategory}
+                onChange={(e) => setSubCategory(e.target.value)}
+              >
+                <option value="">-- Select --</option>
+                {category === "Personal"
+                  ? personalNames.map((n) => <option key={n}>{n}</option>)
+                  : professionalDepts.map((d) => <option key={d}>{d}</option>)}
+              </Form.Select>
+            </Form.Group>
+          )}
+
+          {/* Tags */}
+          <Form.Group className="mb-3">
+            <Form.Label>Tags (comma separated)</Form.Label>
+            <Form.Control
+              type="text"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="e.g. invoice, tax, 2025"
+            />
+          </Form.Group>
+
+          {/* Date Range */}
+          <Row>
+            <Col>
+              <Form.Group className="mb-3">
+                <Form.Label>From Date</Form.Label>
+                <DatePicker
+                  selected={fromDate}
+                  onChange={(date) => setFromDate(date)}
+                  className="form-control"
+                  dateFormat="yyyy-MM-dd"
+                  isClearable
+                />
+              </Form.Group>
+            </Col>
+            <Col>
+              <Form.Group className="mb-3">
+                <Form.Label>To Date</Form.Label>
+                <DatePicker
+                  selected={toDate}
+                  onChange={(date) => setToDate(date)}
+                  className="form-control"
+                  dateFormat="yyyy-MM-dd"
+                  isClearable
+                />
+              </Form.Group>
+            </Col>
+          </Row>
+
+          <Button type="button" variant="success" className="w-100">
+            Search
           </Button>
-        )}
-      </div>
+        </Form>
+      </Card>
 
-      <div>
+      {/* Results */}
+      <h4 className="mb-3">📑 Results</h4>
+      <Row>
         {results.length === 0 ? (
-          <p>No results yet. Try uploading a file first.</p>
+          <p>No documents found.</p>
         ) : (
-          results.map((file, idx) => (
-            <Card key={idx} className="mb-3">
-              <Card.Body>
-                <Card.Title>{file.name}</Card.Title>
-                <Card.Text>
-                  <b>Category:</b> {file.category} <br />
-                  <b>{file.category === "Personal" ? "Name" : "Department"}:</b>{" "}
-                  {file.subCategory} <br />
-                  <b>Tags:</b> {file.tags.join(", ")} <br />
-                  <b>Date:</b> {file.date} <br />
-                  <b>Remarks:</b> {file.remarks}
-                </Card.Text>
-                <Button
-                  variant="primary"
-                  className="me-2"
-                  onClick={() => handlePreview(file)}
-                >
-                  Preview
-                </Button>
-                <Button variant="secondary" onClick={() => handleDownload(file)}>
-                  Download
-                </Button>
-              </Card.Body>
-            </Card>
+          results.map((file, index) => (
+            <Col md={4} key={index} className="mb-3">
+              <Card className="shadow-sm h-100">
+                <Card.Body>
+                  <Card.Title>{file.name}</Card.Title>
+                  <Card.Subtitle className="mb-2 text-muted">
+                    {file.category} → {file.subCategory}
+                  </Card.Subtitle>
+                  <Card.Text>
+                    <strong>Tags:</strong> {file.tags.join(", ")} <br />
+                    <strong>Date:</strong> {file.date} <br />
+                    <strong>Remarks:</strong> {file.remarks}
+                  </Card.Text>
+                  <Button
+                    variant="primary"
+                    size="sm"
+                    className="me-2"
+                    onClick={() => alert("Preview not implemented yet")}
+                  >
+                    Preview
+                  </Button>
+                  <Button
+                    variant="outline-secondary"
+                    size="sm"
+                    onClick={() => alert("Download not implemented yet")}
+                  >
+                    Download
+                  </Button>
+                </Card.Body>
+              </Card>
+            </Col>
           ))
         )}
-      </div>
-
-      {/* Preview Modal */}
-      <Modal show={showPreview} onHide={() => setShowPreview(false)} size="lg">
-        <Modal.Header closeButton>
-          <Modal.Title>Preview: {previewFile?.name}</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {previewFile ? (
-            previewFile.type === "pdf" ? (
-              <p>[PDF Preview Placeholder] — In real app you’d render PDF here.</p>
-            ) : previewFile.type === "image" ? (
-              <p>[Image Preview Placeholder] — In real app you’d render image here.</p>
-            ) : (
-              <p>Preview not supported for this file type.</p>
-            )
-          ) : (
-            <p>No file selected</p>
-          )}
-        </Modal.Body>
-      </Modal>
-    </div>
+      </Row>
+    </Container>
   );
 };
 
